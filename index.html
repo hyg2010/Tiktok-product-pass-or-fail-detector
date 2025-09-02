@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TikTok Product Pass/Fail Detector</title>
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-neutral-50 text-neutral-900">
+  <div class="max-w-5xl mx-auto p-6 space-y-8">
+    <header class="flex items-center justify-between">
+      <h1 class="text-2xl font-bold">TikTok Product Evaluator</h1>
+      <span class="text-xs text-neutral-500">Type. Click. Decide. No spreadsheets.</span>
+    </header>
+
+    <!-- Rules -->
+    <section class="bg-white rounded-2xl shadow p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">Rules</h2>
+        <button id="resetRules" class="text-xs underline">reset</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-7 gap-3 text-sm">
+        <label class="flex flex-col gap-1"><span class="text-neutral-600">Min %</span><input id="minPct" type="number" value="15" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex flex-col gap-1"><span class="text-neutral-600">Min $/order</span><input id="minPerOrder" type="number" value="4" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex flex-col gap-1"><span class="text-neutral-600">Min 7d units</span><input id="minUnits7d" type="number" value="1000" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex flex-col gap-1"><span class="text-neutral-600">Min WoW %</span><input id="minWoW" type="number" value="10" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex flex-col gap-1"><span class="text-neutral-600">Min fit (0–10)</span><input id="minFit" type="number" value="7" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex items-center gap-2"><input id="requireUS" type="checkbox" checked><span class="text-neutral-600">Require US ship</span></label>
+        <label class="flex flex-col gap-1"><span class="text-neutral-
