@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TikTok Product Pass/Fail Detector</title>
+  <title>TikTok Product Pass/Fail Detector — Mini</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-neutral-50 text-neutral-900">
   <div class="max-w-5xl mx-auto p-6 space-y-8">
     <header class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">TikTok Product Evaluator</h1>
-      <span class="text-xs text-neutral-500">Type. Click. Decide. No spreadsheets.</span>
+      <span class="text-xs text-neutral-500">No fluff. Just numbers.</span>
     </header>
 
     <!-- RULES -->
@@ -19,40 +19,31 @@
         <h2 class="font-semibold">Rules</h2>
         <button id="resetRules" class="text-xs underline">reset</button>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-7 gap-3 text-sm">
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-3 text-sm">
         <label class="flex flex-col gap-1"><span class="text-neutral-600">Min %</span><input id="minPct" type="number" value="15" class="border rounded-xl px-3 py-2"></label>
         <label class="flex flex-col gap-1"><span class="text-neutral-600">Min $/order</span><input id="minPerOrder" type="number" value="4" class="border rounded-xl px-3 py-2"></label>
         <label class="flex flex-col gap-1"><span class="text-neutral-600">Min 7d units</span><input id="minUnits7d" type="number" value="1000" class="border rounded-xl px-3 py-2"></label>
         <label class="flex flex-col gap-1"><span class="text-neutral-600">Min WoW %</span><input id="minWoW" type="number" value="10" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">Min fit (0–10)</span><input id="minFit" type="number" value="7" class="border rounded-xl px-3 py-2"></label>
         <label class="flex items-center gap-2"><input id="requireUS" type="checkbox" checked><span class="text-neutral-600">Require US ship</span></label>
         <label class="flex flex-col gap-1"><span class="text-neutral-600">EV share</span><input id="evShare" type="number" step="0.01" value="0.02" class="border rounded-xl px-3 py-2"></label>
       </div>
     </section>
 
-    <!-- PRODUCT -->
+    <!-- PRODUCT (only fields that matter) -->
     <section class="bg-white rounded-2xl shadow p-4">
       <h2 class="font-semibold mb-3">Product (required fields *)</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">* Product</span><input id="product" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">Shop</span><input id="shop" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">Country</span><input id="country" value="US" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex flex-col gap-1 md:col-span-3"><span class="text-neutral-600">* Product</span><input id="product" class="border rounded-xl px-3 py-2"></label>
 
         <label class="flex flex-col gap-1"><span class="text-neutral-600">* Price ($)</span><input id="price" type="number" class="border rounded-xl px-3 py-2"></label>
         <label class="flex flex-col gap-1"><span class="text-neutral-600">* Commission %</span><input id="pct" type="number" class="border rounded-xl px-3 py-2"></label>
         <label class="flex flex-col gap-1"><span class="text-neutral-600">* 7d sales (units)</span><input id="sales7d" type="number" class="border rounded-xl px-3 py-2"></label>
 
         <label class="flex flex-col gap-1"><span class="text-neutral-600">7d revenue ($) (optional)</span><input id="rev7d" type="number" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">Total sales (lifetime)</span><input id="totalSales" type="number" class="border rounded-xl px-3 py-2"></label>
         <label class="flex items-center gap-2"><input id="usShip" type="checkbox" checked><span class="text-neutral-600">US ship</span></label>
-
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">Rating</span><input id="rating" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">Reviews</span><input id="reviews" class="border rounded-xl px-3 py-2"></label>
         <label class="flex items-center gap-2"><input id="sample" type="checkbox"><span class="text-neutral-600">Sample available</span></label>
 
-        <label class="flex flex-col gap-1 md:col-span-3"><span class="text-neutral-600">Content angle</span><input id="angle" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">* Fit (0–10)</span><input id="fit" type="number" value="8" class="border rounded-xl px-3 py-2"></label>
-        <label class="flex flex-col gap-1"><span class="text-neutral-600">* WoW growth %</span><input id="wow" type="number" value="10" class="border rounded-xl px-3 py-2"></label>
+        <label class="flex flex-col gap-1 md:col-span-3"><span class="text-neutral-600">* WoW growth %</span><input id="wow" type="number" value="10" class="border rounded-xl px-3 py-2"></label>
       </div>
 
       <div id="errors" class="hidden mt-3 text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3"></div>
@@ -93,12 +84,12 @@
   <script>
     const $ = id => document.getElementById(id);
     const n = x => Number.isFinite(Number(x)) ? Number(x) : 0;
-    const clamp = (v,a,b) => Math.max(a, Math.min(b,v));
+    const clip01 = v => Math.max(0, Math.min(1, v));
     const money = v => (isFinite(v) && v!==0) ? v.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}) : '$0';
 
     $('resetRules').onclick = () => {
       $('minPct').value=15; $('minPerOrder').value=4; $('minUnits7d').value=1000;
-      $('minWoW').value=10; $('minFit').value=7; $('requireUS').checked=true; $('evShare').value=0.02;
+      $('minWoW').value=10; $('requireUS').checked=true; $('evShare').value=0.02;
     };
     $('resetBtn').onclick = () => { $('results').classList.add('hidden'); $('errors').classList.add('hidden'); };
 
@@ -108,44 +99,56 @@
       if(!n($('price').value)) required.push('Price');
       if(!n($('pct').value)) required.push('Commission %');
       if(!(n($('sales7d').value) || n($('rev7d').value))) required.push('7d Sales OR 7d Revenue');
-      if(!Number.isFinite(Number($('fit').value)) || n($('fit').value)<0 || n($('fit').value)>10) required.push('Fit (0–10)');
       if(!Number.isFinite(Number($('wow').value))) required.push('WoW Growth %');
+
       if(required.length){
         $('errors').innerHTML = '<div class="font-medium mb-1">Missing required:</div><ul class="list-disc ml-5"><li>'+required.join('</li><li>')+'</li></ul>';
         $('errors').classList.remove('hidden'); $('results').classList.add('hidden'); return;
       }
       $('errors').classList.add('hidden');
 
-      // inputs
-      const price = n($('price').value), pct = n($('pct').value), sales = n($('sales7d').value);
+      // Inputs
+      const price = n($('price').value);
+      const pct = n($('pct').value);
+      const sales = n($('sales7d').value);
       const rev7d = $('rev7d').value ? n($('rev7d').value) : price*sales;
-      const fit = clamp(n($('fit').value),0,10), wow = n($('wow').value);
-      const usShip = $('usShip').checked, sample = $('sample').checked;
+      const wow = n($('wow').value);
+      const usShip = $('usShip').checked;
+      const sample = $('sample').checked;
 
-      // rules
-      const minPct = n($('minPct').value), minPerOrder=n($('minPerOrder').value), minUnits7d=n($('minUnits7d').value);
-      const minWoW=n($('minWoW').value), minFit=n($('minFit').value), requireUS=$('requireUS').checked;
-      const evShare=n($('evShare').value)||0.02;
+      // Rules
+      const minPct = n($('minPct').value);
+      const minPerOrder = n($('minPerOrder').value);
+      const minUnits7d = n($('minUnits7d').value);
+      const minWoW = n($('minWoW').value);
+      const requireUS = $('requireUS').checked;
+      const evShare = n($('evShare').value) || 0.02;
 
-      // calcs
-      const cpo = +(price*pct/100).toFixed(2);
-      const dpo = sales>0 ? +(rev7d/sales).toFixed(2) : 0;
-      const pool = Math.round(rev7d*pct/100);
-      const ev = Math.round(pool*evShare);
+      // Core calcs
+      const cpo = +(price*pct/100).toFixed(2);                     // Commission per order
+      const dpo = sales>0 ? +(rev7d/sales).toFixed(2) : 0;          // $/order from 7d
+      const pool = Math.round(rev7d*pct/100);                       // Weekly commission pool
+      const ev   = Math.round(pool*evShare);                        // Your expected weekly share
 
-      const growthWeight=0.5, growthBoost = 1 + (isFinite(wow)?wow:0)*growthWeight/100;
-      const logistics = (usShip?1.05:0.9) * (sample?1.05:0.95);
-      const priority = pool===0||fit===0 ? 0 : Math.round(pool*(fit/10)*growthBoost*logistics);
+      // Priority (no fit): pool × growth × logistics
+      const growthBoost = 1 + (isFinite(wow)?wow:0)*0.5/100;        // weight 0.5
+      const logistics   = (usShip?1.05:0.9) * (sample?1.05:0.95);
+      const priority    = pool===0 ? 0 : Math.round(pool*growthBoost*logistics);
 
-      const moneyScore = Math.max(0, Math.min(1, ev/250));
-      const perOrderScore = Math.max(0, Math.min(1, cpo/4));
-      const growthScore = Math.max(0, Math.min(1, wow/30));
-      const fitScore = fit/10;
-      const logisticsScore = Math.max(0, Math.min(1, (usShip?1:0.5) + (sample?0.1:0)));
-      const score10 = +(10*(0.35*moneyScore + 0.25*perOrderScore + 0.20*growthScore + 0.15*fitScore + 0.05*logisticsScore)).toFixed(1);
+      // Score (1–10) — reweighted without fit
+      const moneyScore    = clip01(ev/250);
+      const perOrderScore = clip01(cpo/4);
+      const growthScore   = clip01(wow/30);
+      const logisticsScore= clip01((usShip?1:0.5) + (sample?0.1:0));
+      const score10 = +(10*(0.5*moneyScore + 0.3*perOrderScore + 0.15*growthScore + 0.05*logisticsScore)).toFixed(1);
 
-      const pass = ((pct>=minPct || cpo>=minPerOrder) && (sales>=minUnits7d || rev7d>=minUnits7d*price) && wow>=minWoW && fit>=minFit && (!requireUS || usShip));
+      // Pass/Fail (no fit gate)
+      const pass = ((pct>=minPct || cpo>=minPerOrder) &&
+                    (sales>=minUnits7d || rev7d>=minUnits7d*price) &&
+                    wow>=minWoW &&
+                    (!requireUS || usShip));
 
+      // Reasons
       const pros=[], cons=[];
       pct>=minPct ? pros.push(`High commission % (${pct}%)`) : cons.push(`Low commission % (${pct}%)`);
       cpo>=minPerOrder ? pros.push(`Good $/order ($${cpo})`) : cons.push(`Weak $/order ($${cpo})`);
@@ -153,9 +156,8 @@
       wow>=minWoW ? pros.push(`Solid growth (+${wow}%)`) : (wow<0 ? cons.push(`Declining (-${Math.abs(wow)}%)`) : cons.push(`Flat growth (${wow}%)`));
       usShip ? pros.push('US shipping') : cons.push('No US shipping');
       if(sample) pros.push('Sample available');
-      fit>=minFit ? pros.push(`Good content fit (${fit}/10)`) : cons.push(`Weak content fit (${fit}/10)`);
 
-      // render
+      // Render
       $('results').classList.remove('hidden');
       $('cpo').textContent = `$${cpo.toFixed(2)}`;
       $('r7d').textContent = money(rev7d);
